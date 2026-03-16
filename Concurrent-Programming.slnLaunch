@@ -13,5 +13,15 @@
         "DebugTarget": "LogicTest"
       }
     ]
+  },
+  {
+    "Name": "Application",
+    "Projects": [
+      {
+        "Path": "View\\View.csproj",
+        "Action": "Start",
+        "DebugTarget": "View"
+      }
+    ]
   }
 ]
