@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "Tests",
+    "Projects": [
+      {
+        "Path": "DataTest\\DataTest.csproj",
+        "Action": "Start",
+        "DebugTarget": "DataTest"
+      },
+      {
+        "Path": "LogicTest\\LogicTest.csproj",
+        "Action": "Start",
+        "DebugTarget": "LogicTest"
+      }
+    ]
+  }
+]

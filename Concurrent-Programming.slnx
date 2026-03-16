@@ -1,0 +1,17 @@
+<Solution>
+  <Project Path="Data/Data.csproj" />
+  <Project Path="DataTest/DataTest.csproj" />
+  <Project Path="Logic/Logic.csproj">
+    <BuildDependency Project="Data/Data.csproj" />
+    <BuildDependency Project="Model/Model.csproj" />
+  </Project>
+  <Project Path="LogicTest/LogicTest.csproj" />
+  <Project Path="Model/Model.csproj" />
+  <Project Path="View/View.csproj">
+    <BuildDependency Project="ViewModel/ViewModel.csproj" />
+  </Project>
+  <Project Path="ViewModel/ViewModel.csproj">
+    <BuildDependency Project="Logic/Logic.csproj" />
+    <BuildDependency Project="Model/Model.csproj" />
+  </Project>
+</Solution>
