@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Data
+{
+    public interface IVelocity
+    {
+        public float X { get; set; }
+        public float Y { get; set; }
+    }
+}
