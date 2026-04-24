@@ -8,8 +8,8 @@ namespace Data
     {
         private readonly Random random = new Random();
 
-        private readonly int boardWidth = 800;
-        private readonly int boardHeight = 600;
+        private readonly int boardWidth = 600;
+        private readonly int boardHeight = 400;
         private readonly IPosition minPosition = new Position(0, 0);
         private IPosition maxPosition = new Position(0, 0);
 

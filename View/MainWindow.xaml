@@ -4,8 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:View"
+        xmlns:vm="clr-namespace:ViewModel;assembly=ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+
     <Grid Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -18,8 +24,6 @@
             <Button Content="Remove ball" Width="104" Height="32" Background="Red" Margin="8"/>
             <Button Content="Start" Width="104" Height="32" Margin="8"/>
         </StackPanel>
-        <Grid Grid.Column="1">
-            <Rectangle Width="583" Height="375" Stroke="Gray" Fill="LightGray" StrokeThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Grid>
+        <Rectangle Grid.Column="1" Width="{Binding Board.Width}" Height="{Binding Board.Height}" Stroke="Gray" Fill="LightGray" StrokeThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </Window>
