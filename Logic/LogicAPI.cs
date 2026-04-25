@@ -8,11 +8,11 @@ namespace Logic
         private Timer timer;
         private int fps = 60;
 
-        public void Start(int ballCount, Action<IBoard, List<IBall>> callback)
+        public void Start(int ballsCount, Action<IBoard, List<IBall>> callback)
         {
             IBoard board = IDataAPI.CreateBoard();
-            List<IBall> balls = new List<IBall>(ballCount);
-            for (int i = 0; i < ballCount; i++)
+            List<IBall> balls = new List<IBall>(ballsCount);
+            for (int i = 0; i < ballsCount; i++)
             {
                 IBall ball = IDataAPI.CreateBall(board);
                 balls.Add(ball);
