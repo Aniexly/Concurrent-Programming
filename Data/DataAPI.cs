@@ -14,7 +14,7 @@ namespace Data
         private IPosition maxPosition = new Position(0, 0);
 
         private readonly int ballRadius = 5;
-        private readonly float ballSpeed = 5f;
+        private readonly double ballSpeed = 5.0;
 
         public IBoard CreateBoard()
         {
@@ -33,16 +33,16 @@ namespace Data
 
         private IPosition CreateRandomPosition()
         {
-            float x = random.NextSingle() * ((int)maxPosition.X - (int)minPosition.X) + (int)minPosition.X;
-            float y = random.NextSingle() * ((int)maxPosition.Y - (int)minPosition.Y) + (int)minPosition.Y;
+            double x = random.NextDouble() * (maxPosition.X - minPosition.X) + minPosition.X;
+            double y = random.NextDouble() * (maxPosition.Y - minPosition.Y) + minPosition.Y;
             return new Position(x, y);
         }
 
         private IVelocity CreateRandomVelocity()
         {
-            float angle = (float)(random.NextSingle() * 2 * Math.PI);
-            float velocityX = (float)(Math.Cos(angle) * ballSpeed);
-            float velocityY = (float)(Math.Sin(angle) * ballSpeed);
+            double angle = random.NextDouble() * 2 * Math.PI;
+            double velocityX = Math.Cos(angle) * ballSpeed;
+            double velocityY = Math.Sin(angle) * ballSpeed;
             return new Velocity(velocityX, velocityY);
         }
     }

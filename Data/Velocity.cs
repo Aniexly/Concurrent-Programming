@@ -6,13 +6,12 @@ namespace Data
 {
     public class Velocity : IVelocity, IEquatable<Velocity>
     {
-        public float X { get; set; }
-        public float Y { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
 
         public Velocity() => (X, Y) = (0, 0);
 
-        public Velocity(float x, float y) => (X, Y) = (x, y);
-
+        public Velocity(double x, double y) => (X, Y) = (x, y);
         public bool Equals(Velocity? other)
         {
             if (other is null)

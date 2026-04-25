@@ -1,18 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Data
 {
     public class Position : IPosition, IEquatable<Position>
     {
-        public float X { get; set; }
-        public float Y { get; set; }
+        private double x;
+        private double y;
+        public double X
+        {
+            get => x;
+            set
+            {
+                x = value;
+                OnPropertyChanged();
+            }
+        }
+        public double Y
+        {
+            get => y;
+            set
+            {
+                y = value;
+                OnPropertyChanged();
+            }
+        }
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public Position() => (X, Y) = (0, 0);
 
-        public Position(float x, float y) => (X, Y) = (x, y);
-
+        public Position(double x, double y) => (X, Y) = (x, y);
         public bool Equals(Position? other)
         {
             if (other is null)
@@ -46,6 +66,11 @@ namespace Data
         public override int GetHashCode()
         {
             return HashCode.Combine(X, Y);
+        }
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

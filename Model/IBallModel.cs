@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Model
 {
-    public interface IBoardModel
+    public interface IBallModel : INotifyPropertyChanged
     {
     }
 }
