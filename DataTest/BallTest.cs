@@ -6,6 +6,30 @@ namespace DataTest
     public sealed class BallTest
     {
         [TestMethod]
+        public void BallNotifiesOnPropertyChange()
+        {
+            IBall ball = new Ball(5);
+            string? changedPropertyName = null;
+            ball.PropertyChanged += (sender, e) => changedPropertyName = e.PropertyName;
+
+            ball.Position = new Position(10, 10);
+
+            Assert.AreEqual("Position", changedPropertyName);
+        }
+
+        [TestMethod]
+        public void BallNotifiesOnSubscribedNotifications()
+        {
+            IBall ball = new Ball(5);
+            string? changedPropertyName = null;
+            ball.PropertyChanged += (sender, e) => changedPropertyName = e.PropertyName;
+
+            ball.Position.X = 10;
+
+            Assert.AreEqual("Position", changedPropertyName);
+        }
+
+        [TestMethod]
         public void BallsPositionIsZeroAfterInitialization()
         {
             int radius = 1;

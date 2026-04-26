@@ -8,13 +8,13 @@ namespace Data
     {
         private readonly Random random = new Random();
 
-        private readonly int boardWidth = 600;
-        private readonly int boardHeight = 400;
+        private readonly int boardWidth = 300;
+        private readonly int boardHeight = 200;
         private readonly IPosition minPosition = new Position(0, 0);
         private IPosition maxPosition = new Position(0, 0);
 
-        private readonly int ballRadius = 5;
-        private readonly double ballSpeed = 5.0;
+        private readonly int ballRadius = 4;
+        private readonly double ballSpeed = 2;
 
         public IBoard CreateBoard()
         {

@@ -7,9 +7,10 @@ namespace Model
     public class BallModel : IBallModel
     {
         private IBall ball;
-        public double PositionX => ball.Position.X - ball.Radius;
-        public double PositionY => ball.Position.Y - ball.Radius;
-        public double Diameter => ball.Radius * 2;
+        private double scale = 2.0;
+        public double PositionX => (ball.Position.X - ball.Radius) * scale;
+        public double PositionY => (ball.Position.Y - ball.Radius) * scale;
+        public double Diameter => ball.Radius * 2 * scale;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

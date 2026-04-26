@@ -17,6 +17,34 @@ namespace LogicTest
         }
 
         [TestMethod]
+        public void StartCallbackReturnsCorrectBallsAndBoard()
+        {
+            int ballsCount = 5;
+            IBoard? callbackBoard = null;
+            List<IBall>? callbackBalls = null;
+
+            logicAPI.Start(ballsCount, (board, balls) =>
+            {
+                callbackBoard = board;
+                callbackBalls = balls;
+            });
+
+            Assert.IsNotNull(callbackBoard);
+            Assert.IsNotNull(callbackBalls);
+            Assert.HasCount(ballsCount, callbackBalls);
+            ThenBallsAreAssignedToBoard(callbackBoard, callbackBalls);
+
+        }
+
+        private void ThenBallsAreAssignedToBoard(IBoard board, List<IBall> balls)
+        {
+            foreach (IBall ball in balls)
+            {
+                Assert.Contains(ball, board.Balls);
+            }
+        }
+
+        [TestMethod]
         public void MoveBallsAddsVelocityVectorToPosition()
         {
             IBoard board = dataAPI.CreateBoard();

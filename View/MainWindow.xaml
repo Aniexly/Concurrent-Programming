@@ -22,11 +22,11 @@
             <TextBox Text="{Binding BallsCount, UpdateSourceTrigger=PropertyChanged}" Width="104" Height="18" Visibility="Visible" Margin="8" />
             <Button Content="Start" Command="{Binding StartCommand}" Width="104" Height="32" Margin="8"/>
         </StackPanel>
-        <Border Grid.Column="1" Width="{Binding BoardModel.Width}" Height="{Binding BoardModel.Height}" BorderBrush="Gray" BorderThickness="1" Background="LightGray" HorizontalAlignment="Center" VerticalAlignment="Center" ClipToBounds="True">
+        <Viewbox Grid.Column="1" Stretch="Uniform">
             <ItemsControl ItemsSource="{Binding BallModels}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas/>
+                        <Canvas Width="{Binding BoardModel.Width}" Height="{Binding BoardModel.Height}" Background="LightGray"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
@@ -41,6 +41,6 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </Border>
+        </Viewbox>
     </Grid>
 </Window>

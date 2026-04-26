@@ -17,17 +17,23 @@ namespace Data
                 OnPropertyChanged();
             }
         }
-        public IVelocity Velocity { get; set; } = new Velocity();
+        public IVelocity Velocity { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public Ball(int radius) => (Radius) = (radius);
+        public Ball(int radius) : this(radius, new Position(), new Velocity()) { }
 
-        public Ball(int radius, IPosition position) => (Radius, Position) = (radius, position);
+        public Ball(int radius, IPosition position) : this(radius, position, new Velocity()) { }
 
-        public Ball(int radius, IVelocity velocity) => (Radius, Velocity) = (radius, velocity);
+        public Ball(int radius, IVelocity velocity) : this(radius, new Position(), velocity) { }
 
-        public Ball(int radius, IPosition position, IVelocity velocity) => (Radius, Position, Velocity) = (radius, position, velocity);
+        public Ball(int radius, IPosition position, IVelocity velocity)
+        {
+            Radius = radius;
+            Position = position;
+            Velocity = velocity;
+            SubscribeToPositionEvents();
+        }
 
         private void SubscribeToPositionEvents()
         {
