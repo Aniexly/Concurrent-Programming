@@ -10,7 +10,7 @@ namespace DataTest
         {
             IPosition position = new Position();
             string? changedPropertyName = null;
-            position.PropertyChanged += (sender, e) => changedPropertyName = e.PropertyName;
+            position.PropertyChanged += (_, e) => changedPropertyName = e.PropertyName;
 
             position.X = 10;
 

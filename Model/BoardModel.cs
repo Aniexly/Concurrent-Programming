@@ -6,14 +6,14 @@ namespace Model
 {
     public class BoardModel : IBoardModel
     {
-        private IBoard board;
-        private double scale = 2.0;
-        public double Width => board.Width * scale;
-        public double Height => board.Height * scale;
+        private readonly IBoard _board;
+        private const double Scale = 2.0;
+        public double Width => _board.Width * Scale;
+        public double Height => _board.Height * Scale;
 
         public BoardModel(IBoard board)
         {
-            this.board = board;
+            _board = board;
         }
     }
 }

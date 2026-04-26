@@ -9,7 +9,7 @@ namespace Data
         public double X { get; set; }
         public double Y { get; set; }
 
-        public Velocity() => (X, Y) = (0, 0);
+        public Velocity() : this(0, 0) { }
 
         public Velocity(double x, double y) => (X, Y) = (x, y);
         public bool Equals(Velocity? other)

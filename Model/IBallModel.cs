@@ -9,5 +9,8 @@ namespace Model
 {
     public interface IBallModel : INotifyPropertyChanged
     {
+        public double PositionX { get; }
+        public double PositionY { get; }
+        public double Diameter { get; }
     }
 }

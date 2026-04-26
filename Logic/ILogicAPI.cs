@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Logic
 {
-    public interface ILogicAPI
+    public interface ILogicApi
     {
         public void Start(int ballsCount, Action<IBoard, List<IBall>> callback);
 

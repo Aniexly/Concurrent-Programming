@@ -6,13 +6,13 @@ namespace Data
     public class Ball : IBall
     {
         public double Radius { get; }
-        private IPosition position = new Position();
+
         public IPosition Position
         {
-            get => position;
+            get;
             set
             {
-                position = value;
+                field = value;
                 SubscribeToPositionEvents();
                 OnPropertyChanged();
             }
@@ -37,9 +37,9 @@ namespace Data
 
         private void SubscribeToPositionEvents()
         {
-            Position.PropertyChanged += (sender, e) =>
+            Position.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(Position.X) || e.PropertyName == nameof(Position.Y))
+                if (e.PropertyName is nameof(Position.X) or nameof(Position.Y))
                 {
                     OnPropertyChanged(nameof(Position));
                 }

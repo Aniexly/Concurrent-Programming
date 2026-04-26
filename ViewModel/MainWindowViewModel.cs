@@ -9,25 +9,23 @@ namespace ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private ILogicAPI logicAPI = new LogicAPI();
+        private readonly ILogicApi _logicApi = new LogicApi();
 
-        private IBoardModel boardModel;
         public IBoardModel BoardModel
         {
-            get => boardModel;
+            get;
             private set
             {
-                boardModel = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
-        private int ballsCount;
         public int BallsCount
         {
-            get => ballsCount;
+            get;
             set
             {
-                ballsCount = value;
+                field = value;
                 OnPropertyChanged();
                 StartCommand.OnCanExecuteChanged();
             }
@@ -44,17 +42,13 @@ namespace ViewModel
 
         private bool IsBallsCountValid()
         {
-            if (BallsCount == 0)
-            {
-                return false;
-            }
-            return true;
+            return BallsCount > 0;
         }
 
         private void Start()
         {
             CleanSetup();
-            logicAPI.Start(BallsCount, StartCallback);
+            _logicApi.Start(BallsCount, StartCallback);
         }
 
         private void CleanSetup()

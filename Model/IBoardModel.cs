@@ -9,5 +9,7 @@ namespace Model
 {
     public interface IBoardModel
     {
+        public double Width { get; }
+        public double Height { get; }
     }
 }

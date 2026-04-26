@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Data
 {
-    public interface IDataAPI
+    public interface IDataApi
     {
         public IBoard CreateBoard();
 

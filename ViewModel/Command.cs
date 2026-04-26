@@ -7,23 +7,22 @@ namespace ViewModel
 {
     public class Command : ICommand
     {
-        private Action<object?> execute;
-        private Predicate<object>? predicate;
-        public Predicate<object>? Predicate
+        private readonly Action<object?> _execute;
+        public Predicate<object?>? Predicate
         {
-            get => predicate;
+            get;
             set
             {
-                predicate = value;
+                field = value;
                 OnCanExecuteChanged();
             }
         }
 
         public event EventHandler? CanExecuteChanged;
 
-        public Command(Action<object?> execute) => (this.execute, this.Predicate) = (execute, null);
+        public Command(Action<object?> execute) : this(execute, null) { }
 
-        public Command(Action<object?> execute, Predicate<object> canExecute) => (this.execute, this.Predicate) = (execute, canExecute);
+        public Command(Action<object?> execute, Predicate<object?>? canExecute) => (_execute, Predicate) = (execute, canExecute);
 
         public bool CanExecute(object? parameter)
         {
@@ -32,7 +31,7 @@ namespace ViewModel
 
         public void Execute(object? parameter)
         {
-            execute(parameter);
+            _execute(parameter);
         }
 
         public void OnCanExecuteChanged()

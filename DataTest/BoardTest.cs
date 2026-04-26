@@ -8,8 +8,8 @@ namespace DataTest
         [TestMethod]
         public void BoardHasNoBallsAfterInitialization()
         {
-            int width = 10;
-            int height = 10;
+            const int width = 10;
+            const int height = 10;
 
             IBoard board = new Board(width, height);
 

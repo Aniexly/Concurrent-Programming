@@ -8,29 +8,28 @@ namespace Data
 {
     public class Position : IPosition, IEquatable<Position>
     {
-        private double x;
-        private double y;
         public double X
         {
-            get => x;
+            get;
             set
             {
-                x = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
         public double Y
         {
-            get => y;
+            get;
             set
             {
-                y = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public Position() => (X, Y) = (0, 0);
+        public Position() : this(0, 0) { }
 
         public Position(double x, double y) => (X, Y) = (x, y);
         public bool Equals(Position? other)

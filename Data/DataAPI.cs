@@ -4,45 +4,43 @@ using System.Text;
 
 namespace Data
 {
-    public class DataAPI : IDataAPI
+    public class DataApi : IDataApi
     {
-        private readonly Random random = new Random();
+        private readonly Random _random = new Random();
 
-        private readonly int boardWidth = 300;
-        private readonly int boardHeight = 200;
-        private readonly IPosition minPosition = new Position(0, 0);
-        private IPosition maxPosition = new Position(0, 0);
-
-        private readonly int ballRadius = 4;
-        private readonly double ballSpeed = 2;
+        private const int BoardWidth = 300;
+        private const int BoardHeight = 200;
+        private readonly IPosition _minPosition = new Position(0, 0);
+        private const int BallRadius = 4;
+        private const double BallSpeed = 2;
 
         public IBoard CreateBoard()
         {
-            return new Board(boardWidth, boardHeight);
+            return new Board(BoardWidth, BoardHeight);
         }
 
         public IBall CreateBall(IBoard board)
         {
-            maxPosition = new Position(board.Width, board.Height);
-            IPosition position = CreateRandomPosition();
+            IPosition maxPosition = new Position(board.Width, board.Height);
+            IPosition position = CreateRandomPosition(maxPosition);
             IVelocity velocity = CreateRandomVelocity();
-            IBall ball = new Ball(ballRadius, position, velocity);
+            IBall ball = new Ball(BallRadius, position, velocity);
             board.Balls.Add(ball);
             return ball;
         }
 
-        private IPosition CreateRandomPosition()
+        private IPosition CreateRandomPosition(IPosition maxPosition)
         {
-            double x = random.NextDouble() * (maxPosition.X - minPosition.X) + minPosition.X;
-            double y = random.NextDouble() * (maxPosition.Y - minPosition.Y) + minPosition.Y;
+            double x = _random.NextDouble() * (maxPosition.X - _minPosition.X) + _minPosition.X;
+            double y = _random.NextDouble() * (maxPosition.Y - _minPosition.Y) + _minPosition.Y;
             return new Position(x, y);
         }
 
         private IVelocity CreateRandomVelocity()
         {
-            double angle = random.NextDouble() * 2 * Math.PI;
-            double velocityX = Math.Cos(angle) * ballSpeed;
-            double velocityY = Math.Sin(angle) * ballSpeed;
+            double angle = _random.NextDouble() * 2 * Math.PI;
+            double velocityX = Math.Cos(angle) * BallSpeed;
+            double velocityY = Math.Sin(angle) * BallSpeed;
             return new Velocity(velocityX, velocityY);
         }
     }

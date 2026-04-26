@@ -2,19 +2,20 @@
 
 namespace Logic
 {
-    public class LogicAPI : ILogicAPI
+    public class LogicApi : ILogicApi
     {
-        private IDataAPI dataAPI = new DataAPI();
-        private Timer timer;
-        private int fps = 60;
+        private readonly IDataApi _dataApi = new DataApi();
+
+        private Timer? _timer;
+        private const int Fps = 60;
 
         public void Start(int ballsCount, Action<IBoard, List<IBall>> callback)
         {
-            IBoard board = dataAPI.CreateBoard();
+            IBoard board = _dataApi.CreateBoard();
             List<IBall> balls = new List<IBall>(ballsCount);
             for (int i = 0; i < ballsCount; i++)
             {
-                IBall ball = dataAPI.CreateBall(board);
+                IBall ball = _dataApi.CreateBall(board);
                 balls.Add(ball);
             }
             callback(board, balls);
@@ -23,8 +24,8 @@ namespace Logic
 
         public void StartMovingBalls(IBoard board)
         {
-            int intervalMs = 1000 / fps;
-            timer = new Timer(callback: _ => MoveBalls(board), state: null, dueTime: 0, period: intervalMs);
+            const int intervalMs = 1000 / Fps;
+            _timer = new Timer(callback: _ => MoveBalls(board), state: null, dueTime: 0, period: intervalMs);
         }
 
         public void MoveBalls(IBoard board)

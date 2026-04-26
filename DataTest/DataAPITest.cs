@@ -3,12 +3,12 @@
 namespace DataTest
 {
     [TestClass]
-    public sealed class DataAPITest
+    public sealed class DataApiTest
     {
         [TestMethod]
         public void CreateBallAddsBallToBoard()
         {
-            IDataAPI data = new DataAPI();
+            IDataApi data = new DataApi();
             IBoard board = data.CreateBoard();
 
             IBall ball = data.CreateBall(board);

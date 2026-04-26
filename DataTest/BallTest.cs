@@ -10,7 +10,7 @@ namespace DataTest
         {
             IBall ball = new Ball(5);
             string? changedPropertyName = null;
-            ball.PropertyChanged += (sender, e) => changedPropertyName = e.PropertyName;
+            ball.PropertyChanged += (_, e) => changedPropertyName = e.PropertyName;
 
             ball.Position = new Position(10, 10);
 
@@ -22,7 +22,7 @@ namespace DataTest
         {
             IBall ball = new Ball(5);
             string? changedPropertyName = null;
-            ball.PropertyChanged += (sender, e) => changedPropertyName = e.PropertyName;
+            ball.PropertyChanged += (_, e) => changedPropertyName = e.PropertyName;
 
             ball.Position.X = 10;
 
@@ -32,7 +32,7 @@ namespace DataTest
         [TestMethod]
         public void BallsPositionIsZeroAfterInitialization()
         {
-            int radius = 1;
+            const int radius = 1;
 
             IBall ball = new Ball(radius);
 
@@ -43,7 +43,7 @@ namespace DataTest
         [TestMethod]
         public void BallHasNoVelocityAfterInitialization()
         {
-            int radius = 1;
+            const int radius = 1;
 
             IBall ball = new Ball(radius);
 

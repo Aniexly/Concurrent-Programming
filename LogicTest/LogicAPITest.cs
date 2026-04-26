@@ -4,26 +4,26 @@ using Logic;
 namespace LogicTest
 {
     [TestClass]
-    public sealed class LogicAPITest
+    public sealed class LogicApiTest
     {
-        private IDataAPI dataAPI = new DataAPI();
-        private ILogicAPI logicAPI = new LogicAPI();
+        private IDataApi _dataApi = new DataApi();
+        private ILogicApi _logicApi = new LogicApi();
 
         [TestInitialize]
         public void InitializeTests()
         {
-            dataAPI = new DataAPI();
-            logicAPI = new LogicAPI();
+            _dataApi = new DataApi();
+            _logicApi = new LogicApi();
         }
 
         [TestMethod]
         public void StartCallbackReturnsCorrectBallsAndBoard()
         {
-            int ballsCount = 5;
+            const int ballsCount = 5;
             IBoard? callbackBoard = null;
             List<IBall>? callbackBalls = null;
 
-            logicAPI.Start(ballsCount, (board, balls) =>
+            _logicApi.Start(ballsCount, (board, balls) =>
             {
                 callbackBoard = board;
                 callbackBalls = balls;
@@ -47,15 +47,15 @@ namespace LogicTest
         [TestMethod]
         public void MoveBallsAddsVelocityVectorToPosition()
         {
-            IBoard board = dataAPI.CreateBoard();
+            IBoard board = _dataApi.CreateBoard();
             Assert.IsGreaterThan(20, board.Width);
             Assert.IsGreaterThan(20, board.Height);
-            IBall ball = dataAPI.CreateBall(board);
+            IBall ball = _dataApi.CreateBall(board);
             ball.Position = new Position(10, 10);
             ball.Velocity = new Velocity(5, 7);
             IPosition expectedPosition = new Position(15, 17);
 
-            logicAPI.MoveBalls(board);
+            _logicApi.MoveBalls(board);
 
             Assert.AreEqual(expectedPosition, ball.Position);
         }
@@ -63,23 +63,23 @@ namespace LogicTest
         [TestMethod]
         public void MoveBallsChangesVelocityOnCollisionsWithWalls()
         {
-            IBoard board = dataAPI.CreateBoard();
+            IBoard board = _dataApi.CreateBoard();
             Assert.IsGreaterThan(20, board.Width);
             Assert.IsGreaterThan(20, board.Height);
-            IBall ballCollidingWithLeftWall = dataAPI.CreateBall(board);
+            IBall ballCollidingWithLeftWall = _dataApi.CreateBall(board);
             ballCollidingWithLeftWall.Position = new Position(3, 10);
             ballCollidingWithLeftWall.Velocity = new Velocity(-5, 0);
-            IBall ballCollidingWithRightWall = dataAPI.CreateBall(board);
+            IBall ballCollidingWithRightWall = _dataApi.CreateBall(board);
             ballCollidingWithRightWall.Position = new Position(board.Width - 3, 10);
             ballCollidingWithRightWall.Velocity = new Velocity(5, 0);
-            IBall ballCollidingWithTopWall = dataAPI.CreateBall(board);
+            IBall ballCollidingWithTopWall = _dataApi.CreateBall(board);
             ballCollidingWithTopWall.Position = new Position(10, 3);
             ballCollidingWithTopWall.Velocity = new Velocity(0, -5);
-            IBall ballCollidingWithBottomWall = dataAPI.CreateBall(board);
+            IBall ballCollidingWithBottomWall = _dataApi.CreateBall(board);
             ballCollidingWithBottomWall.Position = new Position(10, board.Height - 3);
             ballCollidingWithBottomWall.Velocity = new Velocity(0, 5);
 
-            logicAPI.MoveBalls(board);
+            _logicApi.MoveBalls(board);
 
             Assert.AreEqual(new Velocity(5, 0), ballCollidingWithLeftWall.Velocity);
             Assert.AreEqual(new Velocity(-5, 0), ballCollidingWithRightWall.Velocity);
@@ -90,23 +90,23 @@ namespace LogicTest
         [TestMethod]
         public void MoveBallsChangesPositionBasedOnNewVelocityOnCollision()
         {
-            IBoard board = dataAPI.CreateBoard();
+            IBoard board = _dataApi.CreateBoard();
             Assert.IsGreaterThan(20, board.Width);
             Assert.IsGreaterThan(20, board.Height);
-            IBall ballCollidingWithLeftWall = dataAPI.CreateBall(board);
+            IBall ballCollidingWithLeftWall = _dataApi.CreateBall(board);
             ballCollidingWithLeftWall.Position = new Position(3, 10);
             ballCollidingWithLeftWall.Velocity = new Velocity(-5, 0);
-            IBall ballCollidingWithRightWall = dataAPI.CreateBall(board);
+            IBall ballCollidingWithRightWall = _dataApi.CreateBall(board);
             ballCollidingWithRightWall.Position = new Position(board.Width - 3, 10);
             ballCollidingWithRightWall.Velocity = new Velocity(5, 0);
-            IBall ballCollidingWithTopWall = dataAPI.CreateBall(board);
+            IBall ballCollidingWithTopWall = _dataApi.CreateBall(board);
             ballCollidingWithTopWall.Position = new Position(10, 3);
             ballCollidingWithTopWall.Velocity = new Velocity(0, -5);
-            IBall ballCollidingWithBottomWall = dataAPI.CreateBall(board);
+            IBall ballCollidingWithBottomWall = _dataApi.CreateBall(board);
             ballCollidingWithBottomWall.Position = new Position(10, board.Height - 3);
             ballCollidingWithBottomWall.Velocity = new Velocity(0, 5);
 
-            logicAPI.MoveBalls(board);
+            _logicApi.MoveBalls(board);
 
             double radius = ballCollidingWithLeftWall.Radius;
             Assert.AreEqual(new Position(2 + 2 * radius, 10), ballCollidingWithLeftWall.Position);
