@@ -8,6 +8,7 @@ namespace Data
     public interface IBall : INotifyPropertyChanged
     {
         public double Radius { get; }
+        public double Weight { get; }
         public IPosition Position { get; set; }
         public IVelocity Velocity { get; set; }
     }

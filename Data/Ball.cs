@@ -6,7 +6,7 @@ namespace Data
     public class Ball : IBall
     {
         public double Radius { get; }
-
+        public double Weight { get; }
         public IPosition Position
         {
             get;
@@ -21,15 +21,16 @@ namespace Data
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public Ball(int radius) : this(radius, new Position(), new Velocity()) { }
+        public Ball(double radius, double weight) : this(radius, weight, new Position(), new Velocity()) { }
 
-        public Ball(int radius, IPosition position) : this(radius, position, new Velocity()) { }
+        public Ball(double radius, double weight, IPosition position) : this(radius, weight, position, new Velocity()) { }
 
-        public Ball(int radius, IVelocity velocity) : this(radius, new Position(), velocity) { }
+        public Ball(double radius, double weight, IVelocity velocity) : this(radius, weight, new Position(), velocity) { }
 
-        public Ball(int radius, IPosition position, IVelocity velocity)
+        public Ball(double radius, double weight, IPosition position, IVelocity velocity)
         {
             Radius = radius;
+            Weight = weight;
             Position = position;
             Velocity = velocity;
             SubscribeToPositionEvents();

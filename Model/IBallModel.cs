@@ -12,5 +12,6 @@ namespace Model
         public double PositionX { get; }
         public double PositionY { get; }
         public double Diameter { get; }
+        public string Color { get; }
     }
 }

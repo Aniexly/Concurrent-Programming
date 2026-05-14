@@ -8,7 +8,9 @@ namespace DataTest
         [TestMethod]
         public void BallNotifiesOnPropertyChange()
         {
-            IBall ball = new Ball(5);
+            const double radius = 5;
+            const double weight = 5;
+            IBall ball = new Ball(radius, weight);
             string? changedPropertyName = null;
             ball.PropertyChanged += (_, e) => changedPropertyName = e.PropertyName;
 
@@ -20,7 +22,9 @@ namespace DataTest
         [TestMethod]
         public void BallNotifiesOnSubscribedNotifications()
         {
-            IBall ball = new Ball(5);
+            const double radius = 5;
+            const double weight = 5;
+            IBall ball = new Ball(radius, weight);
             string? changedPropertyName = null;
             ball.PropertyChanged += (_, e) => changedPropertyName = e.PropertyName;
 
@@ -32,9 +36,10 @@ namespace DataTest
         [TestMethod]
         public void BallsPositionIsZeroAfterInitialization()
         {
-            const int radius = 1;
+            const int radius = 5;
+            const double weight = 5;
 
-            IBall ball = new Ball(radius);
+            IBall ball = new Ball(radius, weight);
 
             Assert.AreEqual(0, ball.Position.X);
             Assert.AreEqual(0, ball.Position.Y);
@@ -43,9 +48,10 @@ namespace DataTest
         [TestMethod]
         public void BallHasNoVelocityAfterInitialization()
         {
-            const int radius = 1;
+            const int radius = 5;
+            const double weight = 5;
 
-            IBall ball = new Ball(radius);
+            IBall ball = new Ball(radius, weight);
 
             Assert.AreEqual(0, ball.Velocity.X);
             Assert.AreEqual(0, ball.Velocity.Y);

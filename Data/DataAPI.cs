@@ -12,6 +12,8 @@ namespace Data
         private const int BoardHeight = 200;
         private readonly IPosition _minPosition = new Position(0, 0);
         private const int BallRadius = 4;
+        private const int BallMinWeight = 1;
+        private const int BallMaxWeight = 5;
         private const double BallSpeed = 2;
 
         public IBoard CreateBoard()
@@ -22,11 +24,17 @@ namespace Data
         public IBall CreateBall(IBoard board)
         {
             IPosition maxPosition = new Position(board.Width, board.Height);
+            int weight = CreateRandomWeight();
             IPosition position = CreateRandomPosition(maxPosition);
             IVelocity velocity = CreateRandomVelocity();
-            IBall ball = new Ball(BallRadius, position, velocity);
+            IBall ball = new Ball(BallRadius, weight, position, velocity);
             board.Balls.Add(ball);
             return ball;
+        }
+
+        private int CreateRandomWeight()
+        {
+            return _random.Next(BallMinWeight, BallMaxWeight + 1);
         }
 
         private IPosition CreateRandomPosition(IPosition maxPosition)
