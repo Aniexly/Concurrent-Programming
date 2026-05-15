@@ -10,6 +10,7 @@ namespace ViewModel
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private readonly ILogicApi _logicApi = new LogicApi();
+        private readonly object _startSync = new object();
 
         public IBoardModel BoardModel
         {
@@ -45,10 +46,20 @@ namespace ViewModel
             return BallsCount > 0;
         }
 
-        private void Start()
+        private async Task Start()
         {
-            CleanSetup();
-            _logicApi.Start(BallsCount, StartCallback);
+            if (Monitor.TryEnter(_startSync))
+            {
+                try
+                {
+                    CleanSetup();
+                    await _logicApi.Start(BallsCount, StartCallback);
+                }
+                finally
+                {
+                    Monitor.Exit(_startSync);
+                }
+            }
         }
 
         private void CleanSetup()

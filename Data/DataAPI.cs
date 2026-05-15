@@ -14,7 +14,7 @@ namespace Data
         private const int BallRadius = 4;
         private const int BallMinWeight = 1;
         private const int BallMaxWeight = 5;
-        private const double BallSpeed = 2;
+        private const double BallSpeed = 0.8;
 
         public IBoard CreateBoard()
         {

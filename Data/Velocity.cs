@@ -12,6 +12,12 @@ namespace Data
         public Velocity() : this(0, 0) { }
 
         public Velocity(double x, double y) => (X, Y) = (x, y);
+
+        public double GetLength()
+        {
+            return Math.Sqrt(X * X + Y * Y);
+        }
+
         public bool Equals(Velocity? other)
         {
             if (other is null)
