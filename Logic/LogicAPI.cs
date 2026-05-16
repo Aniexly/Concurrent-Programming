@@ -6,6 +6,8 @@ namespace Logic
     {
         private readonly IDataApi _dataApi = new DataApi();
 
+        private const int DefaultBoardWidth = 300;
+        private const int DefaultBoardHeight = 200;
         private Timer? _timer;
         private const int Fps = 60;
         private object _moveBallsSync = new object();
@@ -13,7 +15,7 @@ namespace Logic
         public async Task Start(int ballsCount, Action<IBoard, List<IBall>> callback)
         {
             CleanBeforeStart();
-            IBoard board = _dataApi.CreateBoard();
+            IBoard board = _dataApi.CreateBoard(DefaultBoardWidth, DefaultBoardHeight);
             List<IBall> balls = new List<IBall>(ballsCount);
             for (int i = 0; i < ballsCount; i++)
             {
@@ -42,13 +44,12 @@ namespace Logic
             {
                 try
                 {
+                    List<Task> tasks = new List<Task>();
                     foreach (IBall ball in board.Balls)
                     {
-                        lock (ball)
-                        {
-                            MoveBall(ball, board);
-                        }
+                        tasks.Add(MoveBall(ball, board));
                     }
+                    Task.WaitAll(tasks);
                 }
                 finally
                 {
@@ -69,40 +70,24 @@ namespace Logic
 
         private void HandleCollisionWithBall(IBall ball, IBoard board)
         {
-            List<IBall> possiblyCollidingBalls = FindPossiblyCollidingBalls(ball, board);
-            foreach (IBall otherBall in possiblyCollidingBalls)
+            foreach (IBall otherBall in board.Balls)
             {
-                try
+                if (ball == otherBall)
                 {
-                    if (DoBallsCollide(ball, otherBall))
+                    continue;
+                }
+                (IBall firstBallToLock, IBall secondBallToLock) = ball.Id < otherBall.Id ? (ball, otherBall) : (otherBall, ball);
+                lock (firstBallToLock)
+                {
+                    lock (secondBallToLock)
                     {
-                        BounceBalls(ball, otherBall);
+                        if (DoBallsCollide(ball, otherBall))
+                        {
+                            BounceBalls(ball, otherBall);
+                        }
                     }
                 }
-                finally
-                {
-                    Monitor.Exit(otherBall);
-                }
             }
-        }
-
-        private List<IBall> FindPossiblyCollidingBalls(IBall ball, IBoard board)
-        {
-            return board.Balls
-                .Where((otherBall) => otherBall != ball)
-                .Where((otherBall) => CanBallsCollide(ball, otherBall)).ToList();
-        }
-
-        private bool CanBallsCollide(IBall ball, IBall otherBall)
-        {
-            Monitor.Enter(otherBall);
-            double distance = CalculateDistance(ball.Position, otherBall.Position);
-            bool doesCollide = distance < ball.Radius + otherBall.Radius + ball.Velocity.GetLength() + otherBall.Velocity.GetLength();
-            if (!doesCollide)
-            {
-                Monitor.Exit(otherBall);
-            }
-            return doesCollide;
         }
 
         private double CalculateDistance(IPosition position1, IPosition position2)
@@ -174,33 +159,36 @@ namespace Logic
 
         private void HandleCollisionWithWallAndMove(IBall ball, IBoard board)
         {
-            if (DoesCollideWithHorizontalWalls(ball, board))
+            lock (ball)
             {
-                double distanceToWall = ball.Position.X + ball.Velocity.X - ball.Radius < 0
-                    ? -ball.Position.X + ball.Radius
-                    : board.Width - ball.Position.X - ball.Radius;
-                double xOffset = distanceToWall;
-                ball.Velocity.X = -ball.Velocity.X;
-                xOffset += ball.Velocity.X + distanceToWall;
-                ball.Position.X += xOffset;
-            }
-            else
-            {
-                ball.Position.X += ball.Velocity.X;
-            }
-            if (DoesCollideWithVerticalWalls(ball, board))
-            {
-                double distanceToWall = ball.Position.Y + ball.Velocity.Y - ball.Radius < 0
-                    ? -ball.Position.Y + ball.Radius
-                    : board.Height - ball.Position.Y - ball.Radius;
-                double yOffset = distanceToWall;
-                ball.Velocity.Y = -ball.Velocity.Y;
-                yOffset += ball.Velocity.Y + distanceToWall;
-                ball.Position.Y += yOffset;
-            }
-            else
-            {
-                ball.Position.Y += ball.Velocity.Y;
+                if (DoesCollideWithHorizontalWalls(ball, board))
+                {
+                    double distanceToWall = ball.Position.X + ball.Velocity.X - ball.Radius < 0
+                        ? -ball.Position.X + ball.Radius
+                        : board.Width - ball.Position.X - ball.Radius;
+                    double xOffset = distanceToWall;
+                    ball.Velocity.X = -ball.Velocity.X;
+                    xOffset += ball.Velocity.X + distanceToWall;
+                    ball.Position.X += xOffset;
+                }
+                else
+                {
+                    ball.Position.X += ball.Velocity.X;
+                }
+                if (DoesCollideWithVerticalWalls(ball, board))
+                {
+                    double distanceToWall = ball.Position.Y + ball.Velocity.Y - ball.Radius < 0
+                        ? -ball.Position.Y + ball.Radius
+                        : board.Height - ball.Position.Y - ball.Radius;
+                    double yOffset = distanceToWall;
+                    ball.Velocity.Y = -ball.Velocity.Y;
+                    yOffset += ball.Velocity.Y + distanceToWall;
+                    ball.Position.Y += yOffset;
+                }
+                else
+                {
+                    ball.Position.Y += ball.Velocity.Y;
+                }
             }
         }
 
@@ -218,22 +206,25 @@ namespace Logic
 
         private void MakeSureThatBallIsInsideBoard(IBall ball, IBoard board)
         {
-            if (ball.Position.X - ball.Radius < 0)
+            lock (ball)
             {
-                ball.Position.X = ball.Radius;
-            }
-            else if (ball.Position.X + ball.Radius > board.Width)
-            {
-                ball.Position.X = board.Width - ball.Radius;
-            }
+                if (ball.Position.X - ball.Radius < 0)
+                {
+                    ball.Position.X = ball.Radius;
+                }
+                else if (ball.Position.X + ball.Radius > board.Width)
+                {
+                    ball.Position.X = board.Width - ball.Radius;
+                }
 
-            if (ball.Position.Y - ball.Radius < 0)
-            {
-                ball.Position.Y = ball.Radius;
-            }
-            else if (ball.Position.Y + ball.Radius > board.Height)
-            {
-                ball.Position.Y = board.Height - ball.Radius;
+                if (ball.Position.Y - ball.Radius < 0)
+                {
+                    ball.Position.Y = ball.Radius;
+                }
+                else if (ball.Position.Y + ball.Radius > board.Height)
+                {
+                    ball.Position.Y = board.Height - ball.Radius;
+                }
             }
         }
     }

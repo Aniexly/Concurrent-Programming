@@ -6,7 +6,7 @@ namespace Data
 {
     public interface IDataApi
     {
-        public IBoard CreateBoard();
+        public IBoard CreateBoard(int width, int height);
 
         public IBall CreateBall(IBoard board);
     }

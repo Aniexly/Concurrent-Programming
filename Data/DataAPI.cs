@@ -8,17 +8,15 @@ namespace Data
     {
         private readonly Random _random = new Random();
 
-        private const int BoardWidth = 300;
-        private const int BoardHeight = 200;
         private readonly IPosition _minPosition = new Position(0, 0);
         private const int BallRadius = 4;
         private const int BallMinWeight = 1;
         private const int BallMaxWeight = 5;
         private const double BallSpeed = 0.8;
 
-        public IBoard CreateBoard()
+        public IBoard CreateBoard(int width, int height)
         {
-            return new Board(BoardWidth, BoardHeight);
+            return new Board(width, height);
         }
 
         public IBall CreateBall(IBoard board)

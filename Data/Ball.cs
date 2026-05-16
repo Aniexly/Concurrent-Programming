@@ -5,8 +5,9 @@ namespace Data
 {
     public class Ball : IBall
     {
+        public Guid Id { get; }
         public double Radius { get; }
-        public double Weight { get; }
+        public double Weight { get; set; }
         public IPosition Position
         {
             get;
@@ -29,11 +30,17 @@ namespace Data
 
         public Ball(double radius, double weight, IPosition position, IVelocity velocity)
         {
+            Id = Guid.NewGuid();
             Radius = radius;
             Weight = weight;
             Position = position;
             Velocity = velocity;
             SubscribeToPositionEvents();
+        }
+
+        public override string ToString()
+        {
+            return $"Id: {Id}, Radius: {Radius}, Weight: {Weight}, Position: {Position}, Velocity: {Velocity}";
         }
 
         private void SubscribeToPositionEvents()

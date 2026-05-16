@@ -9,7 +9,7 @@ namespace DataTest
         public void CreateBallAddsBallToBoard()
         {
             IDataApi data = new DataApi();
-            IBoard board = data.CreateBoard();
+            IBoard board = data.CreateBoard(300, 200);
 
             IBall ball = data.CreateBall(board);
 

@@ -9,6 +9,9 @@ namespace LogicTest
         private IDataApi _dataApi = new DataApi();
         private ILogicApi _logicApi = new LogicApi();
 
+        private const int BoardWidth = 300;
+        private const int BoardHeight = 200;
+
         [TestInitialize]
         public void InitializeTests()
         {
@@ -47,9 +50,7 @@ namespace LogicTest
         [TestMethod]
         public void MoveBallsAddsVelocityVectorToPosition()
         {
-            IBoard board = _dataApi.CreateBoard();
-            Assert.IsGreaterThan(20, board.Width);
-            Assert.IsGreaterThan(20, board.Height);
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
             IBall ball = _dataApi.CreateBall(board);
             ball.Position = new Position(10, 10);
             ball.Velocity = new Velocity(5, 7);
@@ -63,9 +64,7 @@ namespace LogicTest
         [TestMethod]
         public void MoveBallsChangesVelocityOnCollisionsWithWalls()
         {
-            IBoard board = _dataApi.CreateBoard();
-            Assert.IsGreaterThan(20, board.Width);
-            Assert.IsGreaterThan(20, board.Height);
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
             IBall ballCollidingWithLeftWall = _dataApi.CreateBall(board);
             ballCollidingWithLeftWall.Position = new Position(3, 10);
             ballCollidingWithLeftWall.Velocity = new Velocity(-5, 0);
@@ -88,11 +87,9 @@ namespace LogicTest
         }
 
         [TestMethod]
-        public void MoveBallsChangesPositionBasedOnNewVelocityOnCollision()
+        public void MoveBallsChangesPositionBasedOnNewVelocityOnCollisionWithWalls()
         {
-            IBoard board = _dataApi.CreateBoard();
-            Assert.IsGreaterThan(20, board.Width);
-            Assert.IsGreaterThan(20, board.Height);
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
             IBall ballCollidingWithLeftWall = _dataApi.CreateBall(board);
             ballCollidingWithLeftWall.Position = new Position(3, 10);
             ballCollidingWithLeftWall.Velocity = new Velocity(-5, 0);
@@ -114,5 +111,81 @@ namespace LogicTest
             Assert.AreEqual(new Position(10, 2 + 2 * radius), ballCollidingWithTopWall.Position);
             Assert.AreEqual(new Position(10, board.Height - 2 - 2 * radius), ballCollidingWithBottomWall.Position);
         }
+
+        [TestMethod]
+        public void MoveBallsHandlesDirectBallsCollision()
+        {
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
+            IBall ball1 = _dataApi.CreateBall(board);
+            ball1.Position = new Position(10, 10);
+            ball1.Velocity = new Velocity(4, 0);
+            ball1.Weight = 1;
+            IBall ball2 = _dataApi.CreateBall(board);
+            ball2.Position = new Position(12, 10);
+            ball2.Velocity = new Velocity(-4, 0);
+            ball2.Weight = 1;
+
+            _logicApi.MoveBalls(board);
+
+            Assert.IsLessThan(0, ball1.Velocity.X);
+            Assert.IsGreaterThan(0, ball2.Velocity.X);
+        }
+
+        [TestMethod]
+        public void MoveBallsTakesWeightIntoAccountWhenHandlingBallsCollision()
+        {
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
+            IBall ball1 = _dataApi.CreateBall(board);
+            ball1.Position = new Position(10, 10);
+            ball1.Velocity = new Velocity(4, 0);
+            ball1.Weight = 5;
+            IBall ball2 = _dataApi.CreateBall(board);
+            ball2.Position = new Position(12, 10);
+            ball2.Velocity = new Velocity(-4, 0);
+            ball2.Weight = 1;
+
+            _logicApi.MoveBalls(board);
+
+            Assert.IsGreaterThan(0, ball1.Velocity.X);
+            Assert.IsGreaterThan(0, ball2.Velocity.X);
+        }
+
+        [TestMethod]
+        public void MoveBallsHandlesBallsCollisionAtAngle()
+        {
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
+            IBall ball1 = _dataApi.CreateBall(board);
+            ball1.Position = new Position(9, 16);
+            ball1.Velocity = new Velocity(0, -3);
+            ball1.Weight = 1;
+            IBall ball2 = _dataApi.CreateBall(board);
+            ball2.Position = new Position(10, 10);
+            ball2.Velocity = new Velocity(0, 3);
+            ball2.Weight = 1;
+
+            _logicApi.MoveBalls(board);
+
+            Assert.IsLessThan(0, ball1.Velocity.X);
+            Assert.IsGreaterThan(0, ball1.Velocity.Y);
+            Assert.IsGreaterThan(0, ball2.Velocity.X);
+            Assert.IsLessThan(0, ball2.Velocity.Y);
+        }
+
+        [TestMethod]
+        public void MoveBallsShouldNotChangeBallsVelocitiesWhenTheyDoNotCollide()
+        {
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
+            IBall ball1 = _dataApi.CreateBall(board);
+            ball1.Position = new Position(10, 10);
+            ball1.Velocity = new Velocity(5, 0);
+            IBall ball2 = _dataApi.CreateBall(board);
+            ball2.Position = new Position(50, 50);
+            ball2.Velocity = new Velocity(-5, 0);
+
+            _logicApi.MoveBalls(board);
+
+            Assert.AreEqual(new Velocity(5, 0), ball1.Velocity);
+            Assert.AreEqual(new Velocity(-5, 0), ball2.Velocity);
+        }
     }
-}
+ }
