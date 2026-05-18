@@ -187,5 +187,48 @@ namespace LogicTest
             Assert.AreEqual(new Velocity(5, 0), ball1.Velocity);
             Assert.AreEqual(new Velocity(-5, 0), ball2.Velocity);
         }
+
+        [TestMethod]
+        public void MoveBallsShouldNotHandleBallsCollisionWhenTheyAreInEachOtherAndMovingAway()
+        {
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
+            IBall ball1 = _dataApi.CreateBall(board);
+            ball1.Position = new Position(10, 10);
+            ball1.Velocity = new Velocity(-5, 0);
+            IBall ball2 = _dataApi.CreateBall(board);
+            ball2.Position = new Position(13, 10);
+            ball2.Velocity = new Velocity(5, 0);
+
+            _logicApi.MoveBalls(board);
+
+            Assert.AreEqual(new Velocity(-5, 0), ball1.Velocity);
+            Assert.AreEqual(new Velocity(5, 0), ball2.Velocity);
+        }
+
+        [TestMethod]
+        public void MoveBallsPreservesEnergyAfterCollision()
+        {
+            IBoard board = _dataApi.CreateBoard(BoardWidth, BoardHeight);
+            IBall ball1 = _dataApi.CreateBall(board);
+            ball1.Position = new Position(10, 10);
+            ball1.Velocity = new Velocity(4, 0);
+            ball1.Weight = 1;
+            IBall ball2 = _dataApi.CreateBall(board);
+            ball2.Position = new Position(12, 10);
+            ball2.Velocity = new Velocity(-4, 0);
+            ball2.Weight = 1;
+            double internalEnergyBefore = CalculateInternalEnergy(ball1, ball2);
+
+            _logicApi.MoveBalls(board);
+
+            double internalEnergyAfter = CalculateInternalEnergy(ball1, ball2);
+            Assert.AreEqual(internalEnergyBefore, internalEnergyAfter, 0.00001);
+        }
+
+        private double CalculateInternalEnergy(IBall ball1, IBall ball2)
+        {
+            return 0.5 * ball1.Weight * (Math.Pow(ball1.Velocity.X, 2) + Math.Pow(ball1.Velocity.Y, 2))
+                   + 0.5 * ball2.Weight * (Math.Pow(ball2.Velocity.X, 2) + Math.Pow(ball2.Velocity.Y, 2));
+        }
     }
- }
+}
