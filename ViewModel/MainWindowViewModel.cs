@@ -53,6 +53,7 @@ namespace ViewModel
                 try
                 {
                     CleanSetup();
+                    _logicApi.Stop();
                     await _logicApi.Start(BallsCount, StartCallback);
                 }
                 finally

@@ -9,6 +9,8 @@ namespace Logic
     {
         public Task Start(int ballsCount, Action<IBoard, List<IBall>> callback);
 
-        public void MoveBalls(IBoard board);
+        public void MoveBallsOnce(IBoard board);
+
+        public void Stop();
     }
 }

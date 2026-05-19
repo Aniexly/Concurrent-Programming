@@ -10,10 +10,11 @@ namespace Logic
         private const int DefaultBoardHeight = 200;
         private Timer? _timer;
         private const int Fps = 60;
-        private object _moveBallsSync = new object();
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public async Task Start(int ballsCount, Action<IBoard, List<IBall>> callback)
         {
+            _cancellationTokenSource = new CancellationTokenSource();
             CleanBeforeStart();
             IBoard board = _dataApi.CreateBoard(DefaultBoardWidth, DefaultBoardHeight);
             List<IBall> balls = new List<IBall>(ballsCount);
@@ -29,33 +30,39 @@ namespace Logic
         private void CleanBeforeStart()
         {
             _timer?.Dispose();
-            _moveBallsSync = new object();
         }
 
         public void StartMovingBalls(IBoard board)
         {
+            CancellationToken cancellationToken = _cancellationTokenSource.Token;
             const int intervalMs = 1000 / Fps;
-            _timer = new Timer(callback: _ => MoveBalls(board), state: null, dueTime: 0, period: intervalMs);
+            foreach (IBall ball in board.Balls)
+            {
+                Thread ballThread = new Thread(new ThreadStart(() =>
+                {
+                    while (!cancellationToken.IsCancellationRequested)
+                    {
+                        MoveBall(ball, board);
+                        if (cancellationToken.WaitHandle.WaitOne(intervalMs))
+                        {
+                            break;
+                        }
+                    }
+                }));
+                ballThread.IsBackground = true;
+                ballThread.Name = $"BallThread: {ball.Id}";
+                ballThread.Start();
+            }
         }
 
-        public void MoveBalls(IBoard board)
+        public void MoveBallsOnce(IBoard board)
         {
-            if (Monitor.TryEnter(_moveBallsSync))
+            List<Task> tasks = new List<Task>();
+            foreach (IBall ball in board.Balls)
             {
-                try
-                {
-                    List<Task> tasks = new List<Task>();
-                    foreach (IBall ball in board.Balls)
-                    {
-                        tasks.Add(MoveBall(ball, board));
-                    }
-                    Task.WaitAll(tasks);
-                }
-                finally
-                {
-                    Monitor.Exit(_moveBallsSync);
-                }
+                tasks.Add(MoveBall(ball, board));
             }
+            Task.WaitAll(tasks);
         }
 
         private async Task MoveBall(IBall ball, IBoard board)
@@ -226,6 +233,12 @@ namespace Logic
                     ball.Position.Y = board.Height - ball.Radius;
                 }
             }
+        }
+
+        public void Stop()
+        {
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
         }
     }
 }

@@ -56,7 +56,7 @@ namespace LogicTest
             ball.Velocity = new Velocity(5, 7);
             IPosition expectedPosition = new Position(15, 17);
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             Assert.AreEqual(expectedPosition, ball.Position);
         }
@@ -78,7 +78,7 @@ namespace LogicTest
             ballCollidingWithBottomWall.Position = new Position(10, board.Height - 3);
             ballCollidingWithBottomWall.Velocity = new Velocity(0, 5);
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             Assert.AreEqual(new Velocity(5, 0), ballCollidingWithLeftWall.Velocity);
             Assert.AreEqual(new Velocity(-5, 0), ballCollidingWithRightWall.Velocity);
@@ -103,7 +103,7 @@ namespace LogicTest
             ballCollidingWithBottomWall.Position = new Position(10, board.Height - 3);
             ballCollidingWithBottomWall.Velocity = new Velocity(0, 5);
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             double radius = ballCollidingWithLeftWall.Radius;
             Assert.AreEqual(new Position(2 + 2 * radius, 10), ballCollidingWithLeftWall.Position);
@@ -125,7 +125,7 @@ namespace LogicTest
             ball2.Velocity = new Velocity(-4, 0);
             ball2.Weight = 1;
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             Assert.IsLessThan(0, ball1.Velocity.X);
             Assert.IsGreaterThan(0, ball2.Velocity.X);
@@ -144,7 +144,7 @@ namespace LogicTest
             ball2.Velocity = new Velocity(-4, 0);
             ball2.Weight = 1;
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             Assert.IsGreaterThan(0, ball1.Velocity.X);
             Assert.IsGreaterThan(0, ball2.Velocity.X);
@@ -163,7 +163,7 @@ namespace LogicTest
             ball2.Velocity = new Velocity(0, 3);
             ball2.Weight = 1;
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             Assert.IsLessThan(0, ball1.Velocity.X);
             Assert.IsGreaterThan(0, ball1.Velocity.Y);
@@ -182,7 +182,7 @@ namespace LogicTest
             ball2.Position = new Position(50, 50);
             ball2.Velocity = new Velocity(-5, 0);
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             Assert.AreEqual(new Velocity(5, 0), ball1.Velocity);
             Assert.AreEqual(new Velocity(-5, 0), ball2.Velocity);
@@ -199,7 +199,7 @@ namespace LogicTest
             ball2.Position = new Position(13, 10);
             ball2.Velocity = new Velocity(5, 0);
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             Assert.AreEqual(new Velocity(-5, 0), ball1.Velocity);
             Assert.AreEqual(new Velocity(5, 0), ball2.Velocity);
@@ -219,7 +219,7 @@ namespace LogicTest
             ball2.Weight = 1;
             double internalEnergyBefore = CalculateInternalEnergy(ball1, ball2);
 
-            _logicApi.MoveBalls(board);
+            _logicApi.MoveBallsOnce(board);
 
             double internalEnergyAfter = CalculateInternalEnergy(ball1, ball2);
             Assert.AreEqual(internalEnergyBefore, internalEnergyAfter, 0.00001);
