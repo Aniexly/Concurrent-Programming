@@ -6,8 +6,15 @@ namespace LogicTest
     [TestClass]
     public sealed class LogicApiTest
     {
+        private class MockLogger : ILogger
+        {
+            public async Task LogBallEventAsync(IBall ball, string eventType)
+            {
+            }
+        }
+
         private IDataApi _dataApi = new DataApi();
-        private ILogicApi _logicApi = new LogicApi();
+        private ILogicApi _logicApi = new LogicApi(new MockLogger());
 
         private const int BoardWidth = 300;
         private const int BoardHeight = 200;
@@ -16,7 +23,7 @@ namespace LogicTest
         public void InitializeTests()
         {
             _dataApi = new DataApi();
-            _logicApi = new LogicApi();
+            _logicApi = new LogicApi(new MockLogger());
         }
 
         [TestMethod]

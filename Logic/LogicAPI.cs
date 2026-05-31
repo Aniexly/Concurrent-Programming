@@ -8,49 +8,64 @@ namespace Logic
 
         private const int DefaultBoardWidth = 300;
         private const int DefaultBoardHeight = 200;
-        private Timer? _timer;
         private const int Fps = 60;
+        private readonly ILogger _logger;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        public LogicApi(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public async Task Start(int ballsCount, Action<IBoard, List<IBall>> callback)
         {
-            _cancellationTokenSource = new CancellationTokenSource();
-            CleanBeforeStart();
+            CancellationToken cancellationToken = PrepareStart();
             IBoard board = _dataApi.CreateBoard(DefaultBoardWidth, DefaultBoardHeight);
             List<IBall> balls = new List<IBall>(ballsCount);
             for (int i = 0; i < ballsCount; i++)
             {
                 IBall ball = _dataApi.CreateBall(board);
                 balls.Add(ball);
+                _logger.LogBallEventAsync(ball, "Created");
             }
             callback(board, balls);
-            StartMovingBalls(board);
+            StartMovingBalls(board, cancellationToken);
         }
 
-        private void CleanBeforeStart()
+        private CancellationToken PrepareStart()
         {
-            _timer?.Dispose();
-        }
-
-        public void StartMovingBalls(IBoard board)
-        {
+            _cancellationTokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
+            return cancellationToken;
+        }
+
+        public void StartMovingBalls(IBoard board, CancellationToken cancellationToken)
+        {
             const int intervalMs = 1000 / Fps;
             foreach (IBall ball in board.Balls)
             {
-                Thread ballThread = new Thread(new ThreadStart(() =>
+                Thread ballThread = new Thread(() =>
                 {
                     while (!cancellationToken.IsCancellationRequested)
                     {
-                        MoveBall(ball, board);
+                        try
+                        {
+                            MoveBall(ball, board);
+                        }
+                        catch (Exception exception)
+                        {
+                            _logger.LogBallEventAsync(ball, $"Exception:{exception.Message}");
+                        }
                         if (cancellationToken.WaitHandle.WaitOne(intervalMs))
                         {
                             break;
                         }
                     }
-                }));
-                ballThread.IsBackground = true;
-                ballThread.Name = $"BallThread: {ball.Id}";
+                })
+                {
+                    IsBackground = true,
+                    Name = $"BallThread: {ball.Id}"
+                };
                 ballThread.Start();
             }
         }
@@ -72,6 +87,7 @@ namespace Logic
                 HandleCollisionWithBall(ball, board);
                 HandleCollisionWithWallAndMove(ball, board);
                 MakeSureThatBallIsInsideBoard(ball, board);
+                _logger.LogBallEventAsync(ball, "Moved");
             });
         }
 
@@ -90,6 +106,8 @@ namespace Logic
                     {
                         if (DoBallsCollide(ball, otherBall))
                         {
+                            _logger.LogBallEventAsync(ball, $"Collided into:{otherBall.Id}");
+                            _logger.LogBallEventAsync(otherBall, $"Collided by:{ball.Id}");
                             BounceBalls(ball, otherBall);
                         }
                     }

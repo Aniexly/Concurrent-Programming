@@ -9,5 +9,7 @@ namespace Data
         public IBoard CreateBoard(int width, int height);
 
         public IBall CreateBall(IBoard board);
+
+        public ILogger CreateLogger(string filePath, CancellationToken cancellationToken);
     }
 }

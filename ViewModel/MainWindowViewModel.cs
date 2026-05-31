@@ -9,7 +9,9 @@ namespace ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private readonly ILogicApi _logicApi = new LogicApi();
+        private readonly ILogicApi _logicApi;
+        private readonly IDataApi _dataApi = new DataApi();
+        private readonly ILogger _logger;
         private readonly object _startSync = new object();
 
         public IBoardModel BoardModel
@@ -38,6 +40,8 @@ namespace ViewModel
 
         public MainWindowViewModel()
         {
+            _logger = _dataApi.CreateLogger("log.txt", CancellationToken.None);
+            _logicApi = new LogicApi(_logger);
             StartCommand = new Command(_ => Start(), _ => IsBallsCountValid());
         }
 

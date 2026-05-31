@@ -49,5 +49,10 @@ namespace Data
             double velocityY = Math.Sin(angle) * BallSpeed;
             return new Velocity(velocityX, velocityY);
         }
+
+        public ILogger CreateLogger(string filePath, CancellationToken cancellationToken)
+        {
+            return new Logger(filePath, cancellationToken);
+        }
     }
 }
