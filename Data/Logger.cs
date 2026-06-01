@@ -19,28 +19,29 @@ namespace Data
 
         private void WriteLoop()
         {
-            while (!_logsQueue.IsCompleted)
+            try
             {
-                try
+                while (!_logsQueue.IsCompleted)
                 {
-                    string log = _logsQueue.Take(_cancellationToken);
-                    AppendFile(log);
+                    try
+                    {
+                        string log = _logsQueue.Take(_cancellationToken);
+                        AppendFile(log);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        CompleteAndDrainQueue();
+                        break;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        break;
+                    }
                 }
-                catch (OperationCanceledException)
-                {
-                    CompleteAndDrainQueue();
-                    break;
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
-                catch (IOException)
-                {
-                }
-                catch (UnauthorizedAccessException)
-                {
-                }
+            }
+            finally
+            {
+                _logsQueue.Dispose();
             }
         }
 
@@ -57,16 +58,7 @@ namespace Data
             _logsQueue.CompleteAdding();
             while (_logsQueue.TryTake(out string? log))
             {
-                try
-                {
-                    AppendFile(log);
-                }
-                catch (IOException)
-                {
-                }
-                catch (UnauthorizedAccessException)
-                {
-                }
+                AppendFile(log);
             }
         }
 
