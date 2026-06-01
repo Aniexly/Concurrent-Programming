@@ -9,10 +9,11 @@ namespace Logic
         private const int DefaultBoardWidth = 300;
         private const int DefaultBoardHeight = 200;
         private const int Fps = 60;
-        private const int SimulationClockIntervalSec = 3;
+        private int SimulationClockIntervalMs => (int)(1000.0 / Fps);
         private readonly ILogger _logger;
         private ISimulationClock _simulationClock;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private Barrier? _barrier;
 
         public LogicApi(ILogger logger)
         {
@@ -30,7 +31,9 @@ namespace Logic
                 balls.Add(ball);
                 _logger.LogBallEventAsync(ball, "Created");
             }
-            _simulationClock = new SimulationClock(TimeSpan.FromSeconds(SimulationClockIntervalSec), cancellationToken);
+            // barrier participants = balls + simulation clock
+            _barrier = new Barrier(board.Balls.Count + 1);
+            _simulationClock = new SimulationClock(TimeSpan.FromMilliseconds(SimulationClockIntervalMs), cancellationToken, _barrier);
             callback(board, balls, _simulationClock);
             _simulationClock.Start();
             StartMovingBalls(board, cancellationToken);
@@ -45,7 +48,7 @@ namespace Logic
 
         public void StartMovingBalls(IBoard board, CancellationToken cancellationToken)
         {
-            const int intervalMs = 1000 / Fps;
+
             foreach (IBall ball in board.Balls)
             {
                 Thread ballThread = new Thread(() =>
@@ -55,14 +58,11 @@ namespace Logic
                         try
                         {
                             MoveBall(ball, board);
+                            _barrier.SignalAndWait(cancellationToken);
                         }
                         catch (Exception exception)
                         {
                             _logger.LogBallEventAsync(ball, $"Exception:{exception.Message}");
-                        }
-                        if (cancellationToken.WaitHandle.WaitOne(intervalMs))
-                        {
-                            break;
                         }
                     }
                 })
@@ -76,23 +76,18 @@ namespace Logic
 
         public void MoveBallsOnce(IBoard board)
         {
-            List<Task> tasks = new List<Task>();
             foreach (IBall ball in board.Balls)
             {
-                tasks.Add(MoveBall(ball, board));
+                MoveBall(ball, board);
             }
-            Task.WaitAll(tasks);
         }
 
-        private async Task MoveBall(IBall ball, IBoard board)
+        private void MoveBall(IBall ball, IBoard board)
         {
-            await Task.Run(() =>
-            {
-                HandleCollisionWithBall(ball, board);
-                HandleCollisionWithWallAndMove(ball, board);
-                MakeSureThatBallIsInsideBoard(ball, board);
-                _logger.LogBallEventAsync(ball, "Moved");
-            });
+            HandleCollisionWithBall(ball, board);
+            HandleCollisionWithWallAndMove(ball, board);
+            MakeSureThatBallIsInsideBoard(ball, board);
+            _logger.LogBallEventAsync(ball, "Moved");
         }
 
         private void HandleCollisionWithBall(IBall ball, IBoard board)

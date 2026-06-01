@@ -13,6 +13,7 @@ namespace Logic
         private PeriodicTimer? _timer;
         private readonly CancellationToken _cancellationToken;
         private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly Barrier _ballsMovementBarrier;
 
         public TimeSpan Elapsed
         {
@@ -25,11 +26,13 @@ namespace Logic
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+        public event Action? OnTick;
 
-        public SimulationClock(TimeSpan updateInterval, CancellationToken cancellationToken)
+        public SimulationClock(TimeSpan updateInterval, CancellationToken cancellationToken, Barrier ballsMovementBarrier)
         {
             _updateInterval = updateInterval;
             _cancellationToken = cancellationToken;
+            _ballsMovementBarrier = ballsMovementBarrier;
         }
 
         public void Start()
@@ -52,6 +55,21 @@ namespace Logic
                 while (_timer != null && await _timer.WaitForNextTickAsync(_cancellationToken))
                 {
                     Tick();
+
+                    if (_ballsMovementBarrier != null)
+                    {
+                        try
+                        {
+                            if (_ballsMovementBarrier.ParticipantsRemaining == 1)
+                            {
+                                _ballsMovementBarrier.SignalAndWait(_cancellationToken);
+                            }
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            break;
+                        }
+                    }
                 }
             }
             catch (OperationCanceledException)
