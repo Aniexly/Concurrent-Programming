@@ -7,7 +7,7 @@ namespace Logic
 {
     public interface ILogicApi
     {
-        public Task Start(int ballsCount, Action<IBoard, List<IBall>> callback);
+        public Task Start(int ballsCount, Action<IBoard, List<IBall>, ISimulationClock> callback);
 
         public void MoveBallsOnce(IBoard board);
 

@@ -32,15 +32,18 @@ namespace LogicTest
             const int ballsCount = 5;
             IBoard? callbackBoard = null;
             List<IBall>? callbackBalls = null;
+            ISimulationClock? callbackClock = null;
 
-            _logicApi.Start(ballsCount, (board, balls) =>
+            _logicApi.Start(ballsCount, (board, balls, clock) =>
             {
                 callbackBoard = board;
                 callbackBalls = balls;
+                callbackClock = clock;
             });
 
             Assert.IsNotNull(callbackBoard);
             Assert.IsNotNull(callbackBalls);
+            Assert.IsNotNull(callbackClock);
             Assert.HasCount(ballsCount, callbackBalls);
             ThenBallsAreAssignedToBoard(callbackBoard, callbackBalls);
 

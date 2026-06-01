@@ -9,7 +9,9 @@ namespace Logic
         private const int DefaultBoardWidth = 300;
         private const int DefaultBoardHeight = 200;
         private const int Fps = 60;
+        private const int SimulationClockIntervalSec = 3;
         private readonly ILogger _logger;
+        private ISimulationClock _simulationClock;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public LogicApi(ILogger logger)
@@ -17,7 +19,7 @@ namespace Logic
             _logger = logger;
         }
 
-        public async Task Start(int ballsCount, Action<IBoard, List<IBall>> callback)
+        public async Task Start(int ballsCount, Action<IBoard, List<IBall>, ISimulationClock> callback)
         {
             CancellationToken cancellationToken = PrepareStart();
             IBoard board = _dataApi.CreateBoard(DefaultBoardWidth, DefaultBoardHeight);
@@ -28,7 +30,9 @@ namespace Logic
                 balls.Add(ball);
                 _logger.LogBallEventAsync(ball, "Created");
             }
-            callback(board, balls);
+            _simulationClock = new SimulationClock(TimeSpan.FromSeconds(SimulationClockIntervalSec), cancellationToken);
+            callback(board, balls, _simulationClock);
+            _simulationClock.Start();
             StartMovingBalls(board, cancellationToken);
         }
 

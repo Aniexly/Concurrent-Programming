@@ -34,6 +34,16 @@ namespace ViewModel
             }
         }
         public ObservableCollection<IBallModel> BallModels { get; } = new ObservableCollection<IBallModel>();
+        public ISimulationClockModel SimulationClockModel
+        {
+            get;
+            private set
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Command StartCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -72,13 +82,14 @@ namespace ViewModel
             BallModels.Clear();
         }
 
-        private void StartCallback(IBoard board, List<IBall> balls)
+        private void StartCallback(IBoard board, List<IBall> balls, ISimulationClock simulationClock)
         {
             SetupBoardModel(board);
             foreach (IBall ball in balls)
             {
                 AddBallModel(ball);
             }
+            SetupSimulationClockModel(simulationClock);
         }
 
         private void SetupBoardModel(IBoard board)
@@ -89,6 +100,11 @@ namespace ViewModel
         private void AddBallModel(IBall ball)
         {
             BallModels.Add(new BallModel(ball));
+        }
+
+        private void SetupSimulationClockModel(ISimulationClock simulationClock)
+        {
+            SimulationClockModel = new SimulationClockModel(simulationClock);
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

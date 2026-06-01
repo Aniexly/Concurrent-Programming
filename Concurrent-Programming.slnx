@@ -3,7 +3,6 @@
   <Project Path="DataTest/DataTest.csproj" />
   <Project Path="Logic/Logic.csproj">
     <BuildDependency Project="Data/Data.csproj" />
-    <BuildDependency Project="Model/Model.csproj" />
   </Project>
   <Project Path="LogicTest/LogicTest.csproj" />
   <Project Path="Model/Model.csproj" />
